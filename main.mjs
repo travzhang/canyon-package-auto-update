@@ -75,7 +75,7 @@ while (true) {
 
         async function gitCommitAndPush() {
             try {
-                const command = `cd canyon && git branch && git config user.name "Allen Zhang" && git config user.email "wr_zhang25@163.com" && git add . && git commit -m "Update dependencies" && git push origin test:test && cd .. && rm -rf canyon`;
+                const command = `cd canyon && git branch && git config user.name "Ethan Zhang" && git config user.email "13472648497@163.com" && git add . && git commit -m "Update dependencies" && git push origin test:test && cd .. && rm -rf canyon`;
                 const { stdout, stderr } = await execPromise(command);
                 console.log('stdout:', stdout);
                 if (stderr) {
