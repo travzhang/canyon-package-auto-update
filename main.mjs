@@ -21,7 +21,7 @@ while (true) {
 
         async function gitClone(repoUrl, targetDir) {
             return new Promise((resolve, reject) => {
-                const command = `git clone ${repoUrl} ${targetDir} && cd canyon && git checkout test && git remote set-url origin https://zhanglinfei257:${env}@github.com/canyon-project/canyon.git && cd ..`;
+                const command = `git clone ${repoUrl} ${targetDir} && cd canyon && git checkout main && git remote set-url origin https://zhanglinfei257:${env}@github.com/canyon-project/canyon.git && cd ..`;
                 exec(command, (error, stdout, stderr) => {
                     resolve();
                 });
@@ -75,7 +75,7 @@ while (true) {
 
         async function gitCommitAndPush() {
             try {
-                const command = `cd canyon && git branch && git config user.name "Ethan Zhang" && git config user.email "13472648497@163.com" && git add . && git commit -m "Update dependencies" && git push origin test:test && cd .. && rm -rf canyon`;
+                const command = `cd canyon && git branch && git config user.name "Ethan Zhang" && git config user.email "13472648497@163.com" && git add . && git commit -m "Update dependencies" && git push origin main:main && cd .. && rm -rf canyon`;
                 const { stdout, stderr } = await execPromise(command);
                 console.log('stdout:', stdout);
                 if (stderr) {
