@@ -34,7 +34,7 @@ while (true) {
         await gitClone(repoUrl, targetDir);
 
 // 2.查找所有package.json文件
-        const paaa = await findPackageJsonFiles('./canyon/packages/canyon-e2e')
+        const paaa = await findPackageJsonFiles('./canyon/packages')
             .then(packageJsonFiles => {
                 return packageJsonFiles;
             })
@@ -75,7 +75,7 @@ while (true) {
 
         async function gitCommitAndPush() {
             try {
-                const command = `cd canyon && git branch && git config user.name "Ethan Zhang" && git config user.email "13472648497@163.com" && git add . && git commit -m "Update dependencies" && git push origin main:main && cd .. && rm -rf canyon`;
+                const command = `cd canyon && git branch && git config user.name "Ethan Zhang" && git config user.email "13472648497@163.com" && git add . && git commit -m "chore: update dependencies" && git push origin main:main && cd .. && rm -rf canyon`;
                 const { stdout, stderr } = await execPromise(command);
                 console.log('stdout:', stdout);
                 if (stderr) {
