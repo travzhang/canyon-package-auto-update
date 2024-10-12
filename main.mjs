@@ -34,7 +34,7 @@ while (true) {
         await gitClone(repoUrl, targetDir);
 
 // 2.查找所有package.json文件
-        const paaa = await findPackageJsonFiles('./canyon/packages')
+        const paaa = await findPackageJsonFiles('./canyon/packages/canyon-platform')
             .then(packageJsonFiles => {
                 return packageJsonFiles;
             })
