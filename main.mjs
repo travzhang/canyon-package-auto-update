@@ -21,7 +21,7 @@ while (true) {
 
         async function gitClone(repoUrl, targetDir) {
             return new Promise((resolve, reject) => {
-                const command = `git clone ${repoUrl} ${targetDir} && cd canyon && git checkout test && git remote set-url origin https://zhangtao25:${env}@github.com/canyon-project/canyon.git && cd ..`;
+                const command = `git clone ${repoUrl} ${targetDir} && cd canyon && git checkout test && git remote set-url origin https://zhanglinfei257:${env}@github.com/canyon-project/canyon.git && cd ..`;
                 exec(command, (error, stdout, stderr) => {
                     resolve();
                 });
@@ -34,7 +34,7 @@ while (true) {
         await gitClone(repoUrl, targetDir);
 
 // 2.查找所有package.json文件
-        const paaa = await findPackageJsonFiles('./canyon')
+        const paaa = await findPackageJsonFiles('./canyon/packages')
             .then(packageJsonFiles => {
                 return packageJsonFiles;
             })
@@ -53,7 +53,7 @@ while (true) {
 
                 for (const [packageName, version] of Object.entries(allDependencies)) {
                     const latestVersion = await getLatestVersion(packageName);
-                    const whitelist = ['prisma','@prisma/client','eslint','@swc/core']
+                    const whitelist = ['prisma','@prisma/client']
                     if (latestVersion && version.replaceAll('^','') !== latestVersion.replaceAll('^','') && !whitelist.includes(packageName)) {
                         console.log(`Updating ${packageName} from ${version} to ${latestVersion}`);
                         if (dependencies[packageName]) {
