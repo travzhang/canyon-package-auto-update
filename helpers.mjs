@@ -8,7 +8,7 @@ export async function findPackageJsonFiles(dir, fileList = []) {
         const filePath = join(dir, file);
         const fileStat = await stat(filePath);
 
-        if (fileStat.isDirectory() && file !== 'node_modules'&&file !== 'examples' !=='canyon-ut') {
+        if (fileStat.isDirectory() && file !== 'node_modules'&&file !== 'examples' && file !=='canyon-ut') {
             await findPackageJsonFiles(filePath, fileList);
         } else if (file === 'package.json') {
             fileList.push(filePath);
