@@ -54,7 +54,7 @@ while (true) {
                 for (const [packageName, version] of Object.entries(allDependencies)) {
                     const latestVersion = await getLatestVersion(packageName);
                     const whitelist = ['prisma','@prisma/client']
-                    if (latestVersion && version.replaceAll('^','') !== latestVersion.replaceAll('^','') && !whitelist.includes(packageName)) {
+                    if (version.includes('^') && latestVersion && version.replaceAll('^','') !== latestVersion.replaceAll('^','') && !whitelist.includes(packageName)) {
                         console.log(`Updating ${packageName} from ${version} to ${latestVersion}`);
                         if (dependencies[packageName]) {
                             json.dependencies[packageName] = `^${latestVersion}`;
