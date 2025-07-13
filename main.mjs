@@ -31,7 +31,7 @@ while (true) {
                 await execPromise(`cd canyon && git checkout dev-package-update`);
                 
                 // Set remote URL
-                await execPromise(`cd canyon && git remote set-url origin https://zhanglinfei257:${env}@github.com/canyon-project/canyon.git`);
+                await execPromise(`cd canyon && git remote set-url origin https://travzhang:${env}@github.com/canyon-project/canyon.git`);
                 
                 console.log('Git clone and setup completed');
             } catch (error) {
