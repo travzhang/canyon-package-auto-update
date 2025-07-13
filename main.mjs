@@ -21,7 +21,7 @@ while (true) {
 
         async function gitClone(repoUrl, targetDir) {
             return new Promise((resolve, reject) => {
-                const command = `git clone ${repoUrl} ${targetDir} && cd canyon && git checkout main && git remote set-url origin https://zhanglinfei257:${env}@github.com/canyon-project/canyon.git && cd ..`;
+                const command = `git clone ${repoUrl} ${targetDir} && cd canyon && git checkout dev-package-update && git remote set-url origin https://zhanglinfei257:${env}@github.com/canyon-project/canyon.git && cd ..`;
                 exec(command, (error, stdout, stderr) => {
                     resolve();
                 });
@@ -53,7 +53,7 @@ while (true) {
 
                 for (const [packageName, version] of Object.entries(allDependencies)) {
                     const latestVersion = await getLatestVersion(packageName);
-                    const whitelist = ['prisma','@prisma/client','eslint']
+                    const whitelist = []
                     if (version.includes('^') && latestVersion && version.replaceAll('^','') !== latestVersion.replaceAll('^','') && !whitelist.includes(packageName)) {
                         console.log(`Updating ${packageName} from ${version} to ${latestVersion}`);
                         if (dependencies[packageName]) {
@@ -75,7 +75,7 @@ while (true) {
 
         async function gitCommitAndPush() {
             try {
-                const command = `cd canyon && git branch && git config user.name "Ethan Zhang" && git config user.email "13472648497@163.com" && git add . && git commit -m "chore: update dependencies" && git push origin main:main && cd .. && rm -rf canyon`;
+                const command = `cd canyon && git branch && git config user.name "Travis Zhang" && git config user.email "wr.zhang25@gmail.com" && git add . && git commit -m "chore: update dependencies" && git push origin dev-package-update:dev-package-update && cd .. && rm -rf canyon`;
                 const { stdout, stderr } = await execPromise(command);
                 console.log('stdout:', stdout);
                 if (stderr) {
@@ -101,7 +101,7 @@ while (true) {
             throw error;  // Rethrow the error if you need to handle it upstream
         }
     }
-    await sleep(60*60*1000)
+    await sleep(30*60*1000)
     // await sleep(1*1000)
 }
 
