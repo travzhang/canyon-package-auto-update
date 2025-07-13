@@ -34,7 +34,7 @@ while (true) {
         await gitClone(repoUrl, targetDir);
 
 // 2.查找所有package.json文件
-        const paaa = await findPackageJsonFiles('./canyon/packages')
+        const paaa = await findPackageJsonFiles('./canyon')
             .then(packageJsonFiles => {
                 return packageJsonFiles;
             })
@@ -43,6 +43,7 @@ while (true) {
 
 
         async function updateDependencies(packageJsonFiles) {
+            const updatedPackages = [];
             for (const packageJson of packageJsonFiles) {
                 console.log(packageJson,'packageJson')
                 const data = fs.readFileSync(packageJson, 'utf8');
@@ -56,6 +57,7 @@ while (true) {
                     const whitelist = []
                     if (version.includes('^') && latestVersion && version.replaceAll('^','') !== latestVersion.replaceAll('^','') && !whitelist.includes(packageName)) {
                         console.log(`Updating ${packageName} from ${version} to ${latestVersion}`);
+                        updatedPackages.push(`${packageName}: ${version} → ^${latestVersion}`);
                         if (dependencies[packageName]) {
                             json.dependencies[packageName] = `^${latestVersion}`;
                         }
@@ -67,15 +69,28 @@ while (true) {
 
                 fs.writeFileSync(packageJson, JSON.stringify(json, null, 2));
             }
+            return updatedPackages;
         }
 
-        await updateDependencies(paaa)
+        const updatedPackages = await updateDependencies(paaa)
 
 // 4.提交代码
 
-        async function gitCommitAndPush() {
+        async function gitCommitAndPush(updatedPackages) {
             try {
-                const command = `cd canyon && git branch && git config user.name "Travis Zhang" && git config user.email "wr.zhang25@gmail.com" && git add . && git commit -m "chore: update dependencies" && git push origin dev-package-update:dev-package-update && cd .. && rm -rf canyon`;
+                let commitMessage = "chore: update dependencies";
+                if (updatedPackages.length > 0) {
+                    if (updatedPackages.length <= 5) {
+                        // 如果更新的包不超过5个，列出所有包
+                        const packageList = updatedPackages.join(', ');
+                        commitMessage = `chore: update dependencies (${packageList})`;
+                    } else {
+                        // 如果更新的包超过5个，只显示总数
+                        commitMessage = `chore: update ${updatedPackages.length} dependencies to latest versions`;
+                    }
+                }
+                
+                const command = `cd canyon && git branch && git config user.name "Travis Zhang" && git config user.email "wr.zhang25@gmail.com" && git add . && git commit -m "${commitMessage}" && git push origin dev-package-update:dev-package-update && cd .. && rm -rf canyon`;
                 const { stdout, stderr } = await execPromise(command);
                 console.log('stdout:', stdout);
                 if (stderr) {
@@ -87,7 +102,7 @@ while (true) {
             }
         }
 
-        await gitCommitAndPush();
+        await gitCommitAndPush(updatedPackages);
     } catch (e) {
         try {
             const command = `rm -rf canyon`;
