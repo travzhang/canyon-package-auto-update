@@ -20,12 +20,24 @@ while (true) {
         // 1.git clone 仓库
 
         async function gitClone(repoUrl, targetDir) {
-            return new Promise((resolve, reject) => {
-                const command = `git clone ${repoUrl} ${targetDir} && cd canyon && git checkout dev-package-update && git remote set-url origin https://zhanglinfei257:${env}@github.com/canyon-project/canyon.git && cd ..`;
-                exec(command, (error, stdout, stderr) => {
-                    resolve();
-                });
-            })
+            try {
+                // 先删除已存在的目录
+                await execPromise(process.platform === 'win32' ? 'rmdir /s /q canyon 2>nul || echo "Directory not found"' : 'rm -rf canyon || echo "Directory not found"');
+                
+                // Clone repository
+                await execPromise(`git clone ${repoUrl} ${targetDir}`);
+                
+                // Change to canyon directory and checkout branch
+                await execPromise(`cd canyon && git checkout dev-package-update`);
+                
+                // Set remote URL
+                await execPromise(`cd canyon && git remote set-url origin https://zhanglinfei257:${env}@github.com/canyon-project/canyon.git`);
+                
+                console.log('Git clone and setup completed');
+            } catch (error) {
+                console.error('Git clone error:', error);
+                throw error;
+            }
         }
 
         const repoUrl = 'https://github.com/canyon-project/canyon.git'; // Replace with your repository URL
@@ -90,12 +102,19 @@ while (true) {
                     }
                 }
                 
-                const command = `cd canyon && git branch && git config user.name "Travis Zhang" && git config user.email "wr.zhang25@gmail.com" && git add . && git commit -m "${commitMessage}" && git push origin dev-package-update:dev-package-update && cd .. && rm -rf canyon`;
-                const { stdout, stderr } = await execPromise(command);
-                console.log('stdout:', stdout);
-                if (stderr) {
-                    console.error('stderr:', stderr);
-                }
+                // 分步执行git命令，避免长命令在Windows下出现问题
+                await execPromise('cd canyon && git branch');
+                await execPromise('cd canyon && git config user.name "Travis Zhang"');
+                await execPromise('cd canyon && git config user.email "wr.zhang25@gmail.com"');
+                await execPromise('cd canyon && git add .');
+                await execPromise(`cd canyon && git commit -m "${commitMessage}"`);
+                await execPromise('cd canyon && git push origin dev-package-update:dev-package-update');
+                
+                // 清理目录
+                const cleanupCommand = process.platform === 'win32' ? 'rmdir /s /q canyon' : 'rm -rf canyon';
+                await execPromise(cleanupCommand);
+                
+                console.log('Git commit and push completed');
             } catch (error) {
                 console.error('Error:', error);
                 throw error;  // Rethrow the error if you need to handle it upstream
@@ -105,15 +124,14 @@ while (true) {
         await gitCommitAndPush(updatedPackages);
     } catch (e) {
         try {
-            const command = `rm -rf canyon`;
-            const { stdout, stderr } = await execPromise(command);
-            console.log('stdout:', stdout);
+            const cleanupCommand = process.platform === 'win32' ? 'rmdir /s /q canyon 2>nul || echo "Cleanup completed"' : 'rm -rf canyon || echo "Cleanup completed"';
+            const { stdout, stderr } = await execPromise(cleanupCommand);
+            console.log('Cleanup stdout:', stdout);
             if (stderr) {
-                console.error('stderr:', stderr);
+                console.error('Cleanup stderr:', stderr);
             }
         } catch (error) {
-            console.error('Error:', error);
-            throw error;  // Rethrow the error if you need to handle it upstream
+            console.error('Cleanup Error:', error);
         }
     }
     await sleep(30*60*1000)
